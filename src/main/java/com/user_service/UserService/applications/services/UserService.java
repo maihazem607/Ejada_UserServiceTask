@@ -8,9 +8,5 @@ public interface UserService {
     User createUser(User user);
     User getUserById(Long id);
     void deleteUser(Long id);
-    User updateUsername(Long id, String username);
-    User updateEmail(Long id, String email);
-    User updatePassword(Long id, String password);
-    User updateFirstName(Long id, String firstName);
-    User updateLastName(Long id, String lastName);
+    User updateUser(Long id, String username, String email, String password, String firstName, String lastName);
 }

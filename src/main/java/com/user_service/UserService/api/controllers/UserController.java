@@ -36,29 +36,15 @@ public class UserController {
         userService.deleteUser(id);
     }
 
-    @PutMapping("/{id}/username")
+    @PutMapping("/{id}")
     public User updateUsername(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String newUsername = body.get("username");
-        return userService.updateUsername(id, newUsername);
-    }
-    @PutMapping("/{id}/email")
-    public User updateEmail(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String newEmail = body.get("email");
-        return userService.updateEmail(id, newEmail);
-    }
-    @PutMapping("/{id}/password")
-    public User updatePassword(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String newPassword = body.get("password");
-        return userService.updatePassword(id, newPassword);
-    }
-    @PutMapping("/{id}/firstName")
-    public User updateFirstName(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String newFirstName = body.get("firstName");
-        return userService.updateFirstName(id, newFirstName);
-    }
-    @PutMapping("/{id}/lastName")
-    public User updateLastName(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String newLastName= body.get("lastName");
-        return userService.updateLastName(id, newLastName);
+
+        return userService.updateUser(id, newUsername,newEmail, newPassword, newFirstName, newLastName);
     }
+  
 }

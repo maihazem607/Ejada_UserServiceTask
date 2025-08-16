@@ -42,47 +42,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUsername(Long id, String username) {
-        validateNotEmpty(username, "Username");
-        checkUsernameAvailable(username);
+    public User updateUser(Long id, String username, String email, String password, String firstName, String lastName) {
         User user = getUserOrThrow(id);
-        user.setUsername(username);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateEmail(Long id, String email) {
-        validateNotEmpty(email, "Email");
-        checkEmailAvailable(email);
-        User user = getUserOrThrow(id);
-        user.setEmail(email);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updatePassword(Long id, String password) {
-        validateNotEmpty(password, "Password");
-        User user = getUserOrThrow(id);
-        if (user.getPassword().equals(password)) {
-            throw new InvalidUserDataException("New password cannot be the same as the current password.");
+        if (username != null) {
+            validateNotEmpty(username, "Username");
+            checkUsernameAvailable(username);
+            user.setUsername(username);
         }
-        user.setPassword(password);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateFirstName(Long id, String firstName) {
-        validateNotEmpty(firstName, "First name");
-        User user = getUserOrThrow(id);
-        user.setFirstName(firstName);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateLastName(Long id, String lastName) {
-        validateNotEmpty(lastName, "Last name");
-        User user = getUserOrThrow(id);
-        user.setLastName(lastName);
+        if (email != null) {
+            validateNotEmpty(email, "Email");
+            checkEmailAvailable(email);
+            user.setEmail(email);
+        }
+        if (password != null) {
+            validateNotEmpty(password, "Password");
+             if (user.getPassword().equals(password)) {
+            throw new InvalidUserDataException("New password cannot be the same as the current password.");
+            }
+            user.setPassword(password);
+        }
+        if (firstName != null) {
+            validateNotEmpty(firstName, "First name");
+            user.setFirstName(firstName);
+        }
+        if (lastName != null) {
+            validateNotEmpty(lastName, "Last name");
+            user.setLastName(lastName);
+        }
         return userRepository.save(user);
     }
 
@@ -92,7 +78,7 @@ public class UserServiceImpl implements UserService {
     // returns the user if exists else throws an exception
     private User getUserOrThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     private void validateNotEmpty(String value, String fieldName) {
