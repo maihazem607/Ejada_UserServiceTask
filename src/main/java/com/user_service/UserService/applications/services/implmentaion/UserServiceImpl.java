@@ -25,8 +25,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = convertToEntity(userDTO);
+    public UserDTO createUser(UserDTO userDTO, String password) {
+        User user = convertToEntity(userDTO, password);
         if (user.getUserId() != null && userRepository.existsById(user.getUserId())) {
             throw new InvalidUserDataException("User ID already exists");
         }
@@ -91,12 +91,12 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    private User convertToEntity(UserDTO userDTO) {
+    private User convertToEntity(UserDTO userDTO, String password) {
         if (userDTO == null) {
             return null;
         }
         User user = new User();
-        user.setUserId(userDTO.getUserId());
+        user.setPassword(password);
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setFirstName(userDTO.getFirstName());
