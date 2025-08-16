@@ -3,6 +3,7 @@ package com.user_service.UserService.applications.services.implmentaion;
 import com.user_service.UserService.applications.exceptions.InvalidUserDataException;
 import com.user_service.UserService.applications.exceptions.UserNotFoundException;
 import com.user_service.UserService.applications.models.User;
+import com.user_service.UserService.applications.models.UserDTO;
 import com.user_service.UserService.applications.repositories.UserRepository;
 import com.user_service.UserService.applications.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +18,25 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     @Override
-    public User createUser(User user) {
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
         if (user.getUserId() != null && userRepository.existsById(user.getUserId())) {
             throw new InvalidUserDataException("User ID already exists");
         }
         validateUser(user);
-        return userRepository.save(user);
+        return convertToDTO(userRepository.save(user));
     }
 
     @Override
-    public User getUserById(Long id) {
-        return getUserOrThrow(id);
+    public UserDTO getUserById(Long id) {
+        return convertToDTO(getUserOrThrow(id));
     }
 
     @Override
@@ -42,7 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, String username, String email, String password, String firstName, String lastName) {
+    public UserDTO updateUser(Long id, String username, String email, String password, String firstName, String lastName) {
         User user = getUserOrThrow(id);
         if (username != null) {
             validateNotEmpty(username, "Username");
@@ -69,11 +73,36 @@ public class UserServiceImpl implements UserService {
             validateNotEmpty(lastName, "Last name");
             user.setLastName(lastName);
         }
-        return userRepository.save(user);
+        return convertToDTO(userRepository.save(user));
     }
 
     // ---------- Helper Methods ----------
 
+    private UserDTO convertToDTO(User user) {
+        if (user == null) {
+            return null;
+        }
+        return new UserDTO(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName()
+        );
+    }
+
+    private User convertToEntity(UserDTO userDTO) {
+        if (userDTO == null) {
+            return null;
+        }
+        User user = new User();
+        user.setUserId(userDTO.getUserId());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        return user;
+    }
 
     // returns the user if exists else throws an exception
     private User getUserOrThrow(Long id) {
