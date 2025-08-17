@@ -30,7 +30,8 @@ public class UserServiceImpl implements UserService {
         if (user.getUserId() != null && userRepository.existsById(user.getUserId())) {
             throw new InvalidUserDataException("User ID already exists");
         }
-        validateUser(user);
+        checkUsernameAvailable(user.getUsername());
+        checkEmailAvailable(user.getEmail());
         return convertToDTO(userRepository.save(user));
     }
 
@@ -128,13 +129,4 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void validateUser(User user) {
-        validateNotEmpty(user.getUsername(), "Username");
-        validateNotEmpty(user.getEmail(), "Email");
-        validateNotEmpty(user.getPassword(), "Password");
-        validateNotEmpty(user.getFirstName(), "First name");
-        validateNotEmpty(user.getLastName(), "Last name");
-        checkUsernameAvailable(user.getUsername());
-        checkEmailAvailable(user.getEmail());
-    }
 }
