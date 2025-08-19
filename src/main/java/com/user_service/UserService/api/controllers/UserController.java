@@ -4,7 +4,7 @@ package com.user_service.UserService.api.controllers;
 import com.user_service.UserService.api.resources.in_request.CreateUserRequest;
 import com.user_service.UserService.api.resources.in_request.UpdateUserRequest;
 import com.user_service.UserService.api.resources.out_response.UsersListResponse;
-import com.user_service.UserService.applications.models.UserDTO;
+import com.user_service.UserService.api.resources.out_response.UserDTO;
 import com.user_service.UserService.applications.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserRequest request) {
-        UserDTO createdUser = userService.createUser(
-            new UserDTO(null, request.getUsername(), request.getEmail(), request.getFirstName(), request.getLastName()),
-            request.getPassword()
-        );
+        UserDTO createdUser = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 

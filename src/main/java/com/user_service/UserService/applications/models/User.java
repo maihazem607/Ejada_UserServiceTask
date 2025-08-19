@@ -1,9 +1,12 @@
 package com.user_service.UserService.applications.models;
 
+import com.user_service.UserService.applications.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Entity
 @Table(name="USER")
@@ -30,4 +33,10 @@ public class User {
 
     @Column(name="lastName")
     private String lastName;
+
+    @Column(name="dateCreated")
+    private Date dateCreated;
+
+    @Column(name="status")
+    private UserStatus status;
 }

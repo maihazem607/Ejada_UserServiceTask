@@ -1,14 +1,17 @@
 package com.user_service.UserService.applications.services.implmentaion;
 
+import com.user_service.UserService.api.resources.in_request.CreateUserRequest;
+import com.user_service.UserService.applications.enums.UserStatus;
 import com.user_service.UserService.applications.exceptions.InvalidUserDataException;
 import com.user_service.UserService.applications.exceptions.UserNotFoundException;
 import com.user_service.UserService.applications.models.User;
-import com.user_service.UserService.applications.models.UserDTO;
+import com.user_service.UserService.api.resources.out_response.UserDTO;
 import com.user_service.UserService.applications.repositories.UserRepository;
 import com.user_service.UserService.applications.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,13 +28,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserDTO userDTO, String password) {
-        User user = convertToEntity(userDTO, password);
-        if (user.getUserId() != null && userRepository.existsById(user.getUserId())) {
-            throw new InvalidUserDataException("User ID already exists");
-        }
-        checkUsernameAvailable(user.getUsername());
-        checkEmailAvailable(user.getEmail());
+    public UserDTO createUser(CreateUserRequest request) {
+        User user = new User();
+        user.setPassword(request.getPassword());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setDateCreated(new Date());
+        user.setStatus(UserStatus.ACTIVE);
+        checkUsernameAvailable(request.getUsername());
+        checkEmailAvailable(request.getEmail());
         return convertToDTO(userRepository.save(user));
     }
 
@@ -88,22 +95,12 @@ public class UserServiceImpl implements UserService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getFirstName(),
-                user.getLastName()
+                user.getLastName(),
+                user.getDateCreated(),
+                user.getStatus()
         );
     }
 
-    private User convertToEntity(UserDTO userDTO, String password) {
-        if (userDTO == null) {
-            return null;
-        }
-        User user = new User();
-        user.setPassword(password);
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        return user;
-    }
 
     // returns the user if exists else throws an exception
     private User getUserOrThrow(Long id) {
